@@ -1,7 +1,5 @@
 import Vue from 'vue'
-import {
-  vueAuth
-} from '@/services/symbolic';
+import { vueAuth } from '@/services/symbolic'
 import * as ProfileAPI from '@/services/api/profile'
 import * as LiniMasaAPI from '@/services/api/modules/lini-masa'
 import * as PenpolAPI from '@/services/api/modules/pendidikan-politik'
@@ -61,22 +59,24 @@ export const state = {
   categories: [],
   cluster: {},
   clusters: [],
-  filterClusters: [{
-    category: {},
-    category_id: null,
-    created_at: null,
-    description: null,
-    id: null,
-    image: null,
-    is_displayed: true,
-    is_eligible: false,
-    is_link_active: false,
-    magic_link: null,
-    members_count: 0,
-    name: 'Semua Cluster',
-    requester: {},
-    status: 'approved'
-  }],
+  filterClusters: [
+    {
+      category: {},
+      category_id: null,
+      created_at: null,
+      description: null,
+      id: null,
+      image: null,
+      is_displayed: true,
+      is_eligible: false,
+      is_link_active: false,
+      magic_link: null,
+      members_count: 0,
+      name: 'Semua Cluster',
+      requester: {},
+      status: 'approved'
+    }
+  ],
   historyLinimasa: [],
   historyPendidikanPolitik: [],
   historyWordStadium: [],
@@ -133,10 +133,14 @@ export const actions = {
     ctx.commit('setBadgeDetail', data.achieved_badge)
   },
   async getClusterList(ctx, payload) {
-    const clusters = await ProfileAPI.getClusterList(payload)
-    ctx.commit('setClusterList', clusters)
-    ctx.commit('setFilterClusterList', clusters)
-    return Promise.resolve(clusters)
+    await ProfileAPI.getClusterList(payload)
+      .then(clusters => {
+        ctx.commit('setClusterList', clusters)
+        ctx.commit('setFilterClusterList', clusters)
+      })
+      .catch(error => {
+        console.error(error)
+      })
   },
   searchClusters(ctx, name) {
     const clusters = ctx.state.clusters.filter(cluster => {
@@ -238,7 +242,7 @@ export const actions = {
     store.commit('setPoliticalParties', {
       political_parties: data.political_parties
     })
-  },
+  }
 }
 
 export const mutations = {
@@ -298,16 +302,24 @@ export const mutations = {
     state.filterClusters = allClusters
   },
   setVoted(state, id) {
-    const index = state.historyPendidikanPolitik.findIndex(question => question.id === id)
-    let question = state.historyPendidikanPolitik.find(question => question.id === id)
+    const index = state.historyPendidikanPolitik.findIndex(
+      question => question.id === id
+    )
+    let question = state.historyPendidikanPolitik.find(
+      question => question.id === id
+    )
     question.is_liked = true
     question.like_count += 1
 
     state.historyPendidikanPolitik[index] = question
   },
   removeVoted(state, id) {
-    const index = state.historyPendidikanPolitik.findIndex(question => question.id === id)
-    let question = state.historyPendidikanPolitik.find(question => question.id === id)
+    const index = state.historyPendidikanPolitik.findIndex(
+      question => question.id === id
+    )
+    let question = state.historyPendidikanPolitik.find(
+      question => question.id === id
+    )
     question.is_liked = false
     question.like_count -= 1
 
